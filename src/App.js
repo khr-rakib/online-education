@@ -1,24 +1,38 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./App.css";
+import Menubar from "./components/Navbar/Menubar";
+import Courses from "./components/Courses/Courses";
+import db from "./components/db";
+import Cart from "./components/Courses/Cart";
 
 function App() {
+  const [courses, setCourses] = useState([]);
+  const [cartItem, setCartItem] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
+
+  useEffect(() => {
+    setCourses(db);
+  }, []);
+
+  useEffect(() => {
+    const result = db.filter((course) => course.title.includes(searchValue));
+    setCourses(result);
+  }, [searchValue]);
+
+  const handleCart = (id) => {
+    const a = document.getElementById("toggleID");
+    a.style.right = "0%";
+
+    const result = db.find((course) => course.id === id);
+    return setCartItem([...cartItem, result]);
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Menubar setSearchValue={setSearchValue} />
+      <Cart cartItem={cartItem} />
+      <Courses handleCart={handleCart} courses={courses} />
     </div>
   );
 }
